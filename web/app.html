@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script type="text/javascript" src="/eel.js"></script>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/icons.css">
+
+        <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+          body {
+  padding-top: 5rem;
+}
+.starter-template {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+    </style>
+
+    <title>Fortinet Licence Reader</title>
+  </head>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Fortinet Licence Reader Help</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Fortinet Licence Reader</p>
+        <p>Usage:<ul>
+        <li>Save .zip attachements for Fortinet Email containing your licence files</li>
+        <li>Choose Select Licence Folder in this tool</li>
+        <li>Browse and Select your folder</li>
+        <li>Enjoy your licence codes</li>
+      </ul></p>
+        <p>Fortinet Licence Reader is created by Tim Morris.</p>
+        <p>Please report any issues at <a href="https://github.com/tmorris-ftnt/ftnt-licence-reader/issues">https://github.com/tmorris-ftnt/ftnt-licence-reader</a>.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <a class="navbar-brand" href="#">Fortinet Licence Reader</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <ul class="navbar-nav mr-auto">
+
+
+    </ul>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  Help
+</button>
+  </div>
+</nav>
+
+<main role="main" class="container">
+  <div id="alertbox" class="float-right"></div>
+<div id="mainpage">
+    <div>
+      <form autocomplete="off">
+
+
+        <div form-group>
+          <button type="button" onclick="getFolder()" class="btn btn-secondary">Select Licence Folder</button>
+          Folder: <span id="filepath"></span> <br/><br/>
+        </div>
+        <div class="form-group">
+          <button type="button" onclick="checkfolder(document.getElementById('filepath').innerHTML)" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+
+    </div>
+</div>
+</main><!-- /.container -->
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+
+<script>
+
+var folder_path = "/";
+async function getFolder() {
+var folder_path = await eel.btn_getfoldername()();
+	if (folder_path) {
+		console.log(folder_path);
+        document.getElementById("filepath").innerHTML = folder_path;
+	}
+}
+
+function checkfolder(fp) {
+  if (fp === "") {
+    bsalert("Please Select a folder first.", "warning")
+  } else {
+    eel.getlicencefromfolder(fp)
+  }
+}
+
+function bsalert(msg,role) {
+  document.getElementById("alertbox").innerHTML = '<div class="alert alert-' + role + ' alert-dismissible fade show" role="alert">' + msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+}
+
+eel.expose(pageupdate);
+function pageupdate(msg) {
+  document.getElementById("mainpage").innerHTML = msg;
+}
+
+</script>
+
+</html>
