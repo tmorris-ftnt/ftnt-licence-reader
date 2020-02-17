@@ -34,17 +34,47 @@ def getlicencefromfolder(folder_name):
                     count += 1
                     text += pageObj.extractText()
 
-                regcode = re.search("Registration Code\s\s\s:\s\s(.....-.....-.....-.....-......)", text)
-                partcode = re.search("days\s\s\s\s\s\s?(\w\w.*?\d\d\d\d+)\w", text)
-                eval_reg = regcode.group(1)
-                partcode_filter = partcode.group(1)
+                ### For FortiCare Codes
+                if eval_reg == '':
+                    try:
+                        regcode = re.search("ContractRegistrationCode:(.+?)Support", text)
+                        partcode = re.search("Description\d\d?(.+-\d\d)", text)
+                        eval_reg = regcode.group(1)
+                        partcode_filter = partcode.group(1)
 
-                eval_sn = evalpdf.strip('.pdf')
-                eval_sku = partcode_filter.replace(eval_sn, '')
+                        eval_sn = evalpdf.strip('.pdf')
+                        eval_sku = partcode_filter
 
-                print(eval_sku + "\t" + eval_sn + "\t" + eval_reg)
-                licresult += eval_sku + "\t" + eval_sn + "\t" + eval_reg + "\n"
-                licresulthtml += "<tr><td>" + eval_sku + "</td><td>" + eval_sn + "</td><td>" + eval_reg + "</td></tr>"
+                        print(eval_sku + "\t" + eval_sn + "\t" + eval_reg)
+                        licresult += eval_sku + "\t" + eval_sn + "\t" + eval_reg + "\n"
+                        licresulthtml += "<tr><td>" + eval_sku + "</td><td>" + eval_sn + "</td><td>" + eval_reg + "</td></tr>"
+                    except:
+                        pass
+
+                ### For VM Codes
+                if eval_reg == '':
+                    try:
+                        regcode = re.search("Registration Code\s\s\s:\s\s(.....-.....-.....-.....-......)", text)
+                        partcode = re.search("days\s\s\s\s\s\s?(\w\w.*?\d\d\d\d+)\w", text)
+                        eval_reg = regcode.group(1)
+                        partcode_filter = partcode.group(1)
+
+                        eval_sn = evalpdf.strip('.pdf')
+                        eval_sku = partcode_filter.replace(eval_sn, '')
+
+                        print(eval_sku + "\t" + eval_sn + "\t" + eval_reg)
+                        licresult += eval_sku + "\t" + eval_sn + "\t" + eval_reg + "\n"
+                        licresulthtml += "<tr><td>" + eval_sku + "</td><td>" + eval_sn + "</td><td>" + eval_reg + "</td></tr>"
+                    except:
+                        pass
+
+                ### For Failures
+                if eval_reg == '':
+                    print("Found no registration codes in " + evalpdf)
+                    licresult += "Found no registration codes in " + evalpdf
+                    licresulthtml += "<tr><td colspan=3>Found no registration codes in " + evalpdf + "</td></tr>"
+
+
 
     if licresult == "":
         licresult = "No licence codes found."
@@ -69,6 +99,11 @@ def btn_getfoldername():
     return foldername
 
 
-
-
-eel.start('app.html', size=(790, 500), disable_cache=True)
+try:
+    eel.start('app.html', size=(790, 600), disable_cache=True)
+except EnvironmentError:
+    # If Chrome isn't found, fallback to Microsoft Edge on Win10 or greater
+    if sys.platform in ['win32', 'win64'] and int(platform.release()) >= 10:
+        eel.start('app.html', size=(790, 600), disable_cache=True, mode='edge')
+    else:
+        raise
